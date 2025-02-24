@@ -1,21 +1,24 @@
-const Todo = require('../../models/todo');
+const Todo = require("../../models/todo");  // Ensure correct path
 
 const addTodo = async (req, res) => {
     try {
         const { task } = req.body;
-        const todo = new Todo({
-        task
-        });
-        await todo.save();
+
+        if (!task) {
+            return res.status(400).json({ success: false, error: "Task is required" });
+        }
+
+        // Sequelize's create() function
+        const newTodo = await Todo.create({ text: task });
+
         res.status(200).json({
-        success: true,
-        data: todo
+            success: true,
+            data: newTodo
         });
+
     } catch (error) {
-        res.status(500).json({
-        success: false,
-        error: error.message
-        });
+        console.error("Error adding todo:", error);
+        res.status(500).json({ success: false, error: "Failed to add todo" });
     }
 };
 
